@@ -20,7 +20,6 @@ def clean_file_path(file_path):
         if drive:
             file_path = path
     
-    print (os.getlogin())
     file_path = file_path.replace("/Users/"+os.getlogin()+"/","")
     file_path = file_path.replace("\\Users\\"+os.getlogin()+"\\","")
 
@@ -31,6 +30,7 @@ def clean_file_path(file_path):
 def send_file(file_to_send, socket):
     print(f"Envoi du fichier : {file_to_send.get_path()}")
     content = file_to_send.read()
+    last_modified = file_to_send.get_last_modified()
     file_to_send.set_path(clean_file_path(file_to_send.get_path()))
     print(f"Nom du fichier nettoyé : {file_to_send.get_path()}")
     # Créer un socket pour le client
@@ -44,7 +44,7 @@ def send_file(file_to_send, socket):
     socket.send(file_content_length.to_bytes(4, byteorder='big'))
     socket.send(content)
 
-    last_modified = int(file_to_send.get_last_modified())
+    last_modified = int(last_modified)
     socket.send(last_modified.to_bytes(8, byteorder='big'))
     
     print(f"Le fichier {file_to_send.get_path()} a été envoyé.")
