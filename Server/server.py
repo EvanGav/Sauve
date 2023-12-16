@@ -1,26 +1,50 @@
 import socket
 import threading
-import os
 from Fichier import Fichier
+
+def recvall(sock, length):
+    data = b''
+    while len(data) < length:
+        packet = sock.recv(length - len(data))
+        if not packet:
+            return None
+        data += packet
+    return data
+
 
 # Fonction pour gérer les connexions clientes
 def handle_client(client_socket):
-    # Recevoir le nom du fichier
-    file_name = client_socket.recv(1024).decode()
-    print(f"Reception du fichier : {file_name}")
+    while True:
+        # Recevoir la longueur du nom de fichier
+        file_name_length = int.from_bytes(client_socket.recv(4), byteorder='big')
 
-    # Créer une instance de la classe Fichier
-    received_file = Fichier(file_name)
-    received_file.content = client_socket.recv(1024)
+        if file_name_length == 0:
+            break  # Terminer la réception des fichiers
 
-    # Enregistrer le fichier dans les dossiers du chemin
-    received_file.save_to_path()
-    print(f"Fichier {file_name} reçu et enregistré.")
+        # Recevoir le nom de fichier
+        file_name = client_socket.recv(file_name_length).decode()
+
+        print(f"Reception du fichier : {file_name}")
+
+        # Recevoir la longueur du contenu du fichier
+        file_content_length = int.from_bytes(client_socket.recv(4), byteorder='big')
+
+        # Recevoir le contenu du fichier
+        file_content = recvall(client_socket, file_content_length)
+
+        # Créer une instance de la classe Fichier
+        received_file = Fichier(file_name)
+        received_file.content = file_content
+
+        # Vérifier et enregistrer le fichier sur le serveur
+        received_file.save_to_path()
+        print(f"Fichier {file_name} reçu et enregistré.")
+
     client_socket.close()
 
 # Adresse IP et port du serveur
-host = input("Entrez l'adresse IP du serveur : ")
-port = int(input("Entrez le port du serveur : "))
+host = "127.0.0.1"
+port = 3333
 
 # Créer un socket pour le serveur
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
