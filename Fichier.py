@@ -21,6 +21,9 @@ class Fichier:
     def set_content(self, content):
         self.content = content
 
+    def set_path(self, path):
+        self.path = path
+
     def save_to_path(self):
         folder_path = os.path.dirname(self.path)
         if not os.path.exists(folder_path):

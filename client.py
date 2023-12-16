@@ -1,13 +1,38 @@
 import socket
 from Fichier import Fichier
 import os
+import hashlib
 
-def send_end_signal(socket):
-    # Envoyer une longueur de nom de fichier égale à zéro pour signaler la fin des fichiers
-    socket.send(int(0).to_bytes(4, byteorder='big'))
+def get_absolute_path_hash():
+    current_path = os.path.abspath(__file__)
+    hash_object = hashlib.sha256(current_path.encode())
+    return hash_object.hexdigest()
 
+BASE_FOLDER = get_absolute_path_hash()
+
+def clean_file_path(file_path):
+    # Supprimer les références relatives (../)
+    file_path = os.path.abspath(os.path.expanduser(file_path))
+
+    # Supprimer les chemins absolus (C:, D:, etc.)
+    if ':' in file_path:
+        drive, path = os.path.splitdrive(file_path)
+        if drive:
+            file_path = path
+    
+    print (os.getlogin())
+    file_path = file_path.replace("/Users/"+os.getlogin()+"/","")
+    file_path = file_path.replace("\\Users\\"+os.getlogin()+"\\","")
+
+    file_path = "./" + BASE_FOLDER+"/" + file_path
+    
+    return file_path
+   
 def send_file(file_to_send, socket):
     print(f"Envoi du fichier : {file_to_send.get_path()}")
+    content = file_to_send.read()
+    file_to_send.set_path(clean_file_path(file_to_send.get_path()))
+    print(f"Nom du fichier nettoyé : {file_to_send.get_path()}")
     # Créer un socket pour le client
     file_name_length = len(file_to_send.get_path())
     socket.send(file_name_length.to_bytes(4, byteorder='big'))
@@ -15,7 +40,6 @@ def send_file(file_to_send, socket):
     socket.send(file_to_send.get_path().encode())
     print(f"Nom du fichier envoyé : {file_to_send.get_path()}")
     # Lire et envoyer le contenu du fichier
-    content = file_to_send.read()
     file_content_length = len(content)
     socket.send(file_content_length.to_bytes(4, byteorder='big'))
     socket.send(content)
@@ -45,6 +69,6 @@ elif os.path.isdir(to_send.get_path()):
 else:
     print("Le fichier ou dossier n'existe pas.")
 
-send_end_signal(client)
+client.send(int(0).to_bytes(4, byteorder='big'))
 
 client.close()
