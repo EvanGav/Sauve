@@ -2,6 +2,12 @@ import socket
 from Fichier import Fichier
 import os
 import hashlib
+import configparser
+
+config = configparser.ConfigParser()
+config.read('extensions.conf')
+allowed_extensions = config['Extensions']['allowed_extensions'].split(', ')
+
 
 def get_absolute_path_hash():
     current_path = os.path.abspath(__file__)
@@ -28,6 +34,10 @@ def clean_file_path(file_path):
     return file_path
    
 def send_file(file_to_send, socket):
+    if not file_to_send.get_path().split('.')[-1] in allowed_extensions:
+        print(f"Le fichier {file_to_send.get_path()} n'est pas autorisé.")
+        return
+
     print(f"Envoi du fichier : {file_to_send.get_path()}")
     content = file_to_send.read()
     last_modified = file_to_send.get_last_modified()
