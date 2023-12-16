@@ -4,6 +4,7 @@ class Fichier:
     def __init__(self, path):
         self.path = path
         self.content = None
+        self.last_modified = os.path.getmtime(self.path)
 
     def __repr__(self) -> str:
         return f"Fichier({self.path})", f"Contenu : {self.content}"
@@ -16,7 +17,7 @@ class Fichier:
         return self.path
     
     def get_last_modified(self):
-        return os.path.getmtime(self.path)
+        return self.last_modified
     
     def set_content(self, content):
         self.content = content

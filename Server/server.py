@@ -1,6 +1,7 @@
 import socket
 import threading
 from Fichier import Fichier
+import os
 
 def recvall(sock, length):
     data = b''
@@ -36,9 +37,22 @@ def handle_client(client_socket):
         received_file = Fichier(file_name)
         received_file.content = file_content
 
-        # Vérifier et enregistrer le fichier sur le serveur
-        received_file.save_to_path()
-        print(f"Fichier {file_name} reçu et enregistré.")
+        received_last_modified = int.from_bytes(client_socket.recv(8), byteorder='big')
+
+        if os.path.exists(file_name):
+            # Vérifier si le fichier existe déjà
+            if received_last_modified > os.path.getmtime(file_name):
+                # Le fichier reçu est plus récent que le fichier existant
+                print(f"Fichier reçu plus récent.")
+                print(f"Ecrasement du fichier {file_name}...")
+                received_file.save_to_path()
+                print(f"Fichier {file_name} enregistré.")
+            else:
+                print(f"Fichier déjà existant.")
+        else:
+            # Vérifier et enregistrer le fichier sur le serveur
+            received_file.save_to_path()
+            print(f"Fichier {file_name} reçu et enregistré.")
 
     client_socket.close()
 

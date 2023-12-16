@@ -43,6 +43,10 @@ def send_file(file_to_send, socket):
     file_content_length = len(content)
     socket.send(file_content_length.to_bytes(4, byteorder='big'))
     socket.send(content)
+
+    last_modified = int(file_to_send.get_last_modified())
+    socket.send(last_modified.to_bytes(8, byteorder='big'))
+    
     print(f"Le fichier {file_to_send.get_path()} a été envoyé.")
 
 def send_folder(folder_to_send, socket):

@@ -17,7 +17,7 @@ read -p "Voulez-vous désinstaller LAMP,installer LAMP ou déployer un site ? (u
         fi
       done
   }  
-
+  #zouzoufgdxsfsqzqfzefzq
   # Cette fonction permet de créer un site en fonction des réponses de l'utilisateur
   function createSite(){
     read -p "Quel est le nom du site ? " nom
