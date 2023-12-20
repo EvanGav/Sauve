@@ -3,6 +3,9 @@ from Fichier import Fichier
 import os
 import hashlib
 import configparser
+from datetime import date
+import json
+
 
 config = configparser.ConfigParser()
 config.read('extensions.conf')
@@ -29,9 +32,32 @@ def clean_file_path(file_path):
     file_path = file_path.replace("/Users/"+os.getlogin()+"/","")
     file_path = file_path.replace("\\Users\\"+os.getlogin()+"\\","")
 
-    file_path = "./" + BASE_FOLDER+"/" + file_path
+    file_path = "./" + BASE_FOLDER +"/"+date.today().strftime("%d-%m-%Y")+"/" + file_path
     
     return file_path
+
+def load_logs():
+    logs = {}
+    if os.path.exists('logs.json'):
+        with open('logs.json', 'r') as log_file:
+            logs = json.load(log_file)
+    return logs
+
+def save_logs(logs):
+    with open('logs.json', 'w') as log_file:
+        json.dump(logs, log_file, indent=4)
+
+def update_file_info(file_info, logs):
+    if file_info["path"] in logs:
+        if logs[file_info["path"]]["last_modified"] < file_info["last_modified"]:
+            print(f"Le fichier {file_info['path']} a une version plus récente, envoi au serveur...")
+            file_info["backup_date"] = logs[file_info["path"]]["backup_date"]
+            return True
+    else:
+        print(f"Le fichier {file_info['path']} n'existe pas dans les logs, envoi au serveur...")
+        return True
+    print(f"Le fichier {file_info['path']} n'a pas été envoyé car cette version existe déjà à la date du {file_info['backup_date']}.")
+    return False
    
 def send_file(file_to_send, socket):
     if not file_to_send.get_path().split('.')[-1] in allowed_extensions:
@@ -41,23 +67,34 @@ def send_file(file_to_send, socket):
     print(f"Envoi du fichier : {file_to_send.get_path()}")
     content = file_to_send.read()
     last_modified = file_to_send.get_last_modified()
-    file_to_send.set_path(clean_file_path(file_to_send.get_path()))
-    print(f"Nom du fichier nettoyé : {file_to_send.get_path()}")
-    # Créer un socket pour le client
-    file_name_length = len(file_to_send.get_path())
-    socket.send(file_name_length.to_bytes(4, byteorder='big'))
-    # Envoyer le nom du fichier
-    socket.send(file_to_send.get_path().encode())
-    print(f"Nom du fichier envoyé : {file_to_send.get_path()}")
-    # Lire et envoyer le contenu du fichier
-    file_content_length = len(content)
-    socket.send(file_content_length.to_bytes(4, byteorder='big'))
-    socket.send(content)
 
-    last_modified = int(last_modified)
-    socket.send(last_modified.to_bytes(8, byteorder='big'))
+    logs = load_logs()
+
+    file_info = {
+        "path": file_to_send.get_path(),
+        "last_modified": last_modified,
+        "backup_date": date.today().strftime("%d-%m-%Y")
+    }
+
+    if update_file_info(file_info, logs):
+        logs[file_info["path"]] = file_info
+        save_logs(logs)
     
-    print(f"Le fichier {file_to_send.get_path()} a été envoyé.")
+        file_to_send.set_path(clean_file_path(file_to_send.get_path()))
+        print(f"Nom du fichier nettoyé : {file_to_send.get_path()}")
+        # Créer un socket pour le client
+        file_name_length = len(file_to_send.get_path())
+        socket.send(file_name_length.to_bytes(4, byteorder='big'))
+        # Envoyer le nom du fichier
+        socket.send(file_to_send.get_path().encode())
+        print(f"Nom du fichier envoyé : {file_to_send.get_path()}")
+        # Lire et envoyer le contenu du fichier
+        file_content_length = len(content)
+        socket.send(file_content_length.to_bytes(4, byteorder='big'))
+        socket.send(content)
+
+        print(f"Le fichier {file_to_send.get_path()} a été envoyé.")
+    
 
 def send_folder(folder_to_send, socket):
     for root, dirs, files in os.walk(folder_to_send.get_path()):
