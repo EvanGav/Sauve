@@ -26,6 +26,10 @@ class Fichier:
         self.path = path
 
     def save_to_path(self):
+        """
+        Enregistre le contenu du fichier dans le chemin spécifié.
+        Crée le dossier s'il n'existe pas.
+        """
         folder_path = os.path.dirname(self.path)
         if not os.path.exists(folder_path):
             os.makedirs(folder_path)

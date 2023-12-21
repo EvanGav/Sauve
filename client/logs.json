@@ -1,16 +1,16 @@
 {
-    "zizou\\autotest.jpg": {
-        "path": "zizou\\autotest.jpg",
+    "..\\zizou\\autotest.jpg": {
+        "path": "..\\zizou\\autotest.jpg",
         "last_modified": 1702759536.2103617,
         "backup_date": "21-12-2023"
     },
-    "zizou\\SIUUUUU\\Messi\\tp-control.pdf": {
-        "path": "zizou\\SIUUUUU\\Messi\\tp-control.pdf",
+    "..\\zizou\\SIUUUUU\\Messi\\tp-control.pdf": {
+        "path": "..\\zizou\\SIUUUUU\\Messi\\tp-control.pdf",
         "last_modified": 1702759536.0673616,
         "backup_date": "21-12-2023"
     },
-    "zizou\\test\\test.txt": {
-        "path": "zizou\\test\\test.txt",
+    "..\\zizou\\test\\test.txt": {
+        "path": "..\\zizou\\test\\test.txt",
         "last_modified": 1703096815.2598505,
         "backup_date": "21-12-2023"
     }
