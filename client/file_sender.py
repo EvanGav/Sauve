@@ -34,6 +34,7 @@ def clean_file_path(file_path):
     #On remplace le path par un nouveau
     file_path = file_path.replace("/Users/"+os.getlogin()+"/","")
     file_path = file_path.replace("\\Users\\"+os.getlogin()+"\\","")
+    file_path = file_path.replace("/home/"+os.getlogin()+"/","")
 
     file_path = os.path.join(".", BASE_FOLDER, date.today().strftime("%d-%m-%Y"), file_path)
     

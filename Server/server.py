@@ -2,9 +2,7 @@ import socket
 import threading
 from file_storer import store_file
 from backup_sender import receive_demand
-
-
-
+import ssl
 
 def handle_client(client_socket):
     """
@@ -34,16 +32,28 @@ port = 3333
 
 # On créer un socket pour le serveur
 server = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+
 # On lie le socket à l'adresse IP et au port du serveur
 server.bind((host, port))
 # On écoute les connexions entrantes
 server.listen(5)
+#on initialise le contexte SSL
+context=ssl.create_default_context(ssl.Purpose.CLIENT_AUTH)
+context.verify_mode=ssl.CERT_OPTIONAL
+context.check_hostname=False
+
+context.load_cert_chain(certfile="../cert/rootCA.pem", keyfile="../cert/rootCA.key")
+
+context.load_verify_locations("../cert/rootCA.pem")
+
+server_ssl=ssl.wrap_socket(server, server_side=False)
+
 
 print(f"Serveur en attente de connexions sur le port {port}...")
 
 while True:
     # On accepte les connexions clientes
-    client_sock, addr = server.accept()
+    client_sock, addr = server_ssl.accept()
     print(f"Connexion entrante de {addr[0]}:{addr[1]}")
 
     # On démarre un thread pour gérer la connexion d'un ou plusieurs clients
