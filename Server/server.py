@@ -46,7 +46,7 @@ context.load_cert_chain(certfile="../cert/rootCA.pem", keyfile="../cert/rootCA.k
 
 context.load_verify_locations("../cert/rootCA.pem")
 
-server_ssl=ssl.wrap_socket(server, server_side=False)
+server_ssl=ssl.wrap_socket(server, ssl_version=ssl.PROTOCOL_TLSv1_2, server_side=True, certfile="../cert/rootCA.pem", keyfile="../cert/rootCA.key")
 
 
 print(f"Serveur en attente de connexions sur le port {port}...")

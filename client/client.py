@@ -17,7 +17,7 @@ context.verify_mode=ssl.CERT_OPTIONAL
 context.check_hostname=False
 context.load_verify_locations("../cert/rootCA.pem")
 
-client_ssl=context.wrap_socket(client, server_hostname=host)
+client_ssl=context.wrap_socket(client, server_hostname=host, server_side=False)
 
 client_ssl.connect((host, port))
 
