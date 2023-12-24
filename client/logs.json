@@ -1,0 +1,17 @@
+{
+    "..\\TestFolder\\autotest.jpg": {
+        "path": "..\\TestFolder\\autotest.jpg",
+        "last_modified": 1702759536.2103617,
+        "backup_date": "24-12-2023"
+    },
+    "..\\TestFolder\\test\\test.txt": {
+        "path": "..\\TestFolder\\test\\test.txt",
+        "last_modified": 1703096815.2598505,
+        "backup_date": "24-12-2023"
+    },
+    "..\\TestFolder\\test2\\test3\\tp-control.pdf": {
+        "path": "..\\TestFolder\\test2\\test3\\tp-control.pdf",
+        "last_modified": 1702759536.0673616,
+        "backup_date": "24-12-2023"
+    }
+}
