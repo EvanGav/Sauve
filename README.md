@@ -27,7 +27,7 @@ cd client
 python3 client.py
 ```
 
-Suivez ensuite les instruction dictées sur la console, vous pouvez tester grâce au dossier :
+Suivez ensuite les instruction dictées sur la console, vous pouvez tester grâce à un dossier de votre ordinateur :
 ``` sh
 ../TestFolder #a partir du dossier client
 ```
